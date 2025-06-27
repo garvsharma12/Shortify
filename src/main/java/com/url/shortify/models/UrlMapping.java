@@ -1,4 +1,4 @@
-package models;
+package com.url.shortify.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
