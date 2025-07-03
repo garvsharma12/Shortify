@@ -107,4 +107,9 @@ public class UrlMappingService {
                         Collectors.counting()
                 ));
     }
+
+    public UrlMapping getOriginalUrl(String shortUrl) {
+        UrlMapping urlMapping = urlMappingRepository.findByShortUrl(shortUrl);
+        return urlMapping;
+    }
 }
