@@ -1,12 +1,17 @@
-import { useState } from 'react'
-import './App.css'
+import "./App.css";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import LandingPage from "./components/LandingPage.jsx";
+import AboutPage from "./components/aboutPage.jsx";
 
 function App() {
-  return (
-      <>
-          <h1 className="text-3xl font-mono underline"> Hello world! </h1>
-      </>
-  )
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/about" element={<AboutPage />} />
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
-export default App
+export default App;
