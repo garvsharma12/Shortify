@@ -27,7 +27,7 @@ const CreateNewShorten = ({ setOpen, refetch }) => {
   const createShortUrlHandler = async (data) => {
     setLoading(true);
     try {
-        const { data: res } = await api.post("/api/urls/shorten", data, {
+        const { data: res } = await api.post("/api/urls/shortify", data, {
             headers: {
               "Content-Type": "application/json",
               Accept: "application/json",

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import {createContext, useContext, useState} from "react";
 
 const ContextApi = createContext();
 
@@ -19,6 +19,5 @@ export const ContextProvider = ({ children }) => {
 
 
 export const useStoreContext = () => {
-    const context = useContext(ContextApi);
-    return context;
+    return useContext(ContextApi);
 }
