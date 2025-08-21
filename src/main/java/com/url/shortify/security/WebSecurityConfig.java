@@ -59,6 +59,7 @@ public class WebSecurityConfig {
             JwtAuthenticationFilter jwtAuthenticationFilter
     ) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> {})
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/public/login").permitAll()
                         .requestMatchers("/api/auth/public/register").permitAll()

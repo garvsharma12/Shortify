@@ -10,11 +10,8 @@ import com.url.shortify.repository.UrlMappingRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -35,11 +32,10 @@ public class UrlMappingService {
         urlMapping.setUser(user);
         urlMapping.setCreatedDate(LocalDateTime.now());
         UrlMapping savedUrlMapping = urlMappingRepository.save(urlMapping);
-        return convertToDTO(savedUrlMapping);
+        return convertToDto(savedUrlMapping);
     }
 
-
-    private UrlMappingDTO convertToDTO(UrlMapping urlMapping) {
+    private UrlMappingDTO convertToDto(UrlMapping urlMapping){
         UrlMappingDTO urlMappingDTO = new UrlMappingDTO();
         urlMappingDTO.setId(urlMapping.getId());
         urlMappingDTO.setOriginalUrl(urlMapping.getOriginalUrl());
@@ -51,10 +47,12 @@ public class UrlMappingService {
     }
 
     private String generateShortUrl() {
-        String characters = "ABCDEFGHIJKLMNOPQURSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
         Random random = new Random();
         StringBuilder shortUrl = new StringBuilder(8);
-        for(int i = 0; i < 8; i++) {
+
+        for (int i = 0; i < 8; i++) {
             shortUrl.append(characters.charAt(random.nextInt(characters.length())));
         }
         return shortUrl.toString();
@@ -62,64 +60,48 @@ public class UrlMappingService {
 
     public List<UrlMappingDTO> getUrlsByUser(User user) {
         return urlMappingRepository.findByUser(user).stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+                .map(this::convertToDto)
+                .toList();
     }
 
-    public List<ClickEventDTO> getClickEventsByDate(String shortUrl, LocalDate start, LocalDate end) {
+    public List<ClickEventDTO> getClickEventsByDate(String shortUrl, LocalDateTime start, LocalDateTime end) {
         UrlMapping urlMapping = urlMappingRepository.findByShortUrl(shortUrl);
         if (urlMapping != null) {
-            List<ClickEvent> clickEvents = clickEventRepository.findByUrlMappingAndClickDateBetween(
-                    urlMapping,
-                    start.atStartOfDay(),
-                    end.plusDays(1).atStartOfDay() // to make end date inclusive
-            );
-
-            return clickEvents.stream()
-                    .collect(Collectors.groupingBy(
-                            click -> click.getClickDate().toLocalDate(),
-                            Collectors.counting()
-                    ))
-                    .entrySet()
-                    .stream()
+            return clickEventRepository.findByUrlMappingAndClickDateBetween(urlMapping, start, end).stream()
+                    .collect(Collectors.groupingBy(click -> click.getClickDate().toLocalDate(), Collectors.counting()))
+                    .entrySet().stream()
                     .map(entry -> {
-                        ClickEventDTO dto = new ClickEventDTO();
-                        dto.setClickDate(entry.getKey());
-                        dto.setCount(entry.getValue());
-                        return dto;
+                        ClickEventDTO clickEventDTO = new ClickEventDTO();
+                        clickEventDTO.setClickDate(entry.getKey());
+                        clickEventDTO.setCount(entry.getValue());
+                        return clickEventDTO;
                     })
                     .collect(Collectors.toList());
         }
-        return Collections.emptyList();
+        return null;
     }
-
 
     public Map<LocalDate, Long> getTotalClicksByUserAndDate(User user, LocalDate start, LocalDate end) {
         List<UrlMapping> urlMappings = urlMappingRepository.findByUser(user);
-        List<ClickEvent> clickEvents = clickEventRepository.findByUrlMappingInAndClickDateBetween(
-                urlMappings,
-                start.atStartOfDay(),
-                end.plusDays(1).atStartOfDay()
-        );
+        List<ClickEvent> clickEvents = clickEventRepository.findByUrlMappingInAndClickDateBetween(urlMappings, start.atStartOfDay(), end.plusDays(1).atStartOfDay());
         return clickEvents.stream()
-                .collect(Collectors.groupingBy(
-                        click -> click.getClickDate().toLocalDate(),
-                        Collectors.counting()
-                ));
+                .collect(Collectors.groupingBy(click -> click.getClickDate().toLocalDate(), Collectors.counting()));
+
     }
 
     public UrlMapping getOriginalUrl(String shortUrl) {
         UrlMapping urlMapping = urlMappingRepository.findByShortUrl(shortUrl);
-        if(urlMapping!=null){
+        if (urlMapping != null) {
             urlMapping.setClickCount(urlMapping.getClickCount() + 1);
             urlMappingRepository.save(urlMapping);
 
-            //RecordingClickEvent
+            // Record Click Event
             ClickEvent clickEvent = new ClickEvent();
             clickEvent.setClickDate(LocalDateTime.now());
             clickEvent.setUrlMapping(urlMapping);
             clickEventRepository.save(clickEvent);
         }
+
         return urlMapping;
     }
 }
