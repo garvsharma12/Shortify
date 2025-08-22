@@ -42,6 +42,7 @@ const RegisterPage = () => {
         }
     };
 
+
     return (
         <div className="min-h-[calc(100vh-64px)] flex justify-center items-center bg-white px-4">
             <form
