@@ -1,6 +1,6 @@
 package com.url.shortify.dtos;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 public class UrlMappingDTO {
 
@@ -8,7 +8,7 @@ public class UrlMappingDTO {
     private String originalUrl;
     private String shortUrl;
     private int clickCount;
-    private LocalDateTime createdDate;
+    private Instant createdDate;
     private String username;
 
     public long getId() {
@@ -43,11 +43,11 @@ public class UrlMappingDTO {
         this.clickCount = clickCount;
     }
 
-    public LocalDateTime getCreatedDate() {
+    public Instant getCreatedDate() {
         return createdDate;
     }
 
-    public void setCreatedDate(LocalDateTime createdDate) {
+    public void setCreatedDate(Instant createdDate) {
         this.createdDate = createdDate;
     }
 

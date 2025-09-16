@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -30,7 +31,7 @@ public class UrlMappingService {
         urlMapping.setOriginalUrl(originalUrl);
         urlMapping.setShortUrl(shortUrl);
         urlMapping.setUser(user);
-        urlMapping.setCreatedDate(LocalDateTime.now());
+    urlMapping.setCreatedDate(Instant.now());
         UrlMapping savedUrlMapping = urlMappingRepository.save(urlMapping);
         return convertToDto(savedUrlMapping);
     }
@@ -41,7 +42,7 @@ public class UrlMappingService {
         urlMappingDTO.setOriginalUrl(urlMapping.getOriginalUrl());
         urlMappingDTO.setShortUrl(urlMapping.getShortUrl());
         urlMappingDTO.setClickCount(urlMapping.getClickCount());
-        urlMappingDTO.setCreatedDate(urlMapping.getCreatedDate());
+    urlMappingDTO.setCreatedDate(urlMapping.getCreatedDate());
         urlMappingDTO.setUsername(urlMapping.getUser().getUsername());
         return urlMappingDTO;
     }

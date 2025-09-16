@@ -3,7 +3,7 @@ package com.url.shortify.models;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class UrlMapping {
     private String originalUrl;
     private String shortUrl;
     private int clickCount = 0;
-    private LocalDateTime createdDate;
+    private Instant createdDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
