@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { useStoreContext } from '../../contextApi/ContextApi';
 import { useForm } from 'react-hook-form';
-import { data } from 'autoprefixer';
 import TextField from '../TextField';
 import { Tooltip } from '@mui/material';
 import { RxCross2 } from 'react-icons/rx';
@@ -85,7 +84,7 @@ const CreateNewShorten = ({ setOpen, refetch }) => {
 
         <button
           className="bg-customRed font-semibold text-white w-32  bg-custom-gradient  py-2  transition-colors  rounded-md my-3"
-          type="text"
+          type="submit"
         >
           {loading ? "Loading..." : "Create"}
         </button>

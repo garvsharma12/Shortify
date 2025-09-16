@@ -67,7 +67,8 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/auth/public/register").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/user/**").permitAll()
-                        .requestMatchers("/{shortUrl}").permitAll()
+                        // allow short redirect links like /abc123 without auth
+                        .requestMatchers(HttpMethod.GET, "/*").permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(daoAuthenticationProvider)

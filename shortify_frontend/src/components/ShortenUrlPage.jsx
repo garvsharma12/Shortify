@@ -6,7 +6,7 @@ const ShortenUrlPage = () => {
 
     useEffect(() => {
         if (url) {
-            const raw = import.meta.env.VITE_BACKEND_URL || "";
+            const raw = import.meta.env.VITE_BACKEND_URL || "https://shortify-production-4b6f.up.railway.app";
             const base = raw.replace(/\/+$/, "");
             window.location.href = `${base}/${url}`;
         }

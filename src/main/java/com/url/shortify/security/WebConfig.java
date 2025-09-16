@@ -25,16 +25,27 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${frontend.url:}")
     private String frontEndUrl;
 
+    private static String normalizeOrigin(String origin) {
+        if (origin == null) return null;
+        String trimmed = origin.trim();
+        // remove trailing slashes to match exact Origin header
+        while (trimmed.endsWith("/")) {
+            trimmed = trimmed.substring(0, trimmed.length() - 1);
+        }
+        return trimmed;
+    }
+
     @Override
     public void addCorsMappings(@NonNull CorsRegistry registry) {
         List<String> origins = new ArrayList<>();
         if (allowedOriginsProp != null && !allowedOriginsProp.isBlank()) {
             origins.addAll(Arrays.stream(allowedOriginsProp.split(","))
                     .map(String::trim)
-                    .filter(s -> !s.isEmpty())
+                    .map(WebConfig::normalizeOrigin)
+                    .filter(s -> s != null && !s.isEmpty())
                     .toList());
         } else if (frontEndUrl != null && !frontEndUrl.isBlank()) {
-            origins.add(frontEndUrl.trim());
+            origins.add(normalizeOrigin(frontEndUrl));
         }
 
         var reg = registry.addMapping("/**")
@@ -59,10 +70,11 @@ public class WebConfig implements WebMvcConfigurer {
         if (allowedOriginsProp != null && !allowedOriginsProp.isBlank()) {
             origins.addAll(Arrays.stream(allowedOriginsProp.split(","))
                     .map(String::trim)
-                    .filter(s -> !s.isEmpty())
+                    .map(WebConfig::normalizeOrigin)
+                    .filter(s -> s != null && !s.isEmpty())
                     .toList());
         } else if (frontEndUrl != null && !frontEndUrl.isBlank()) {
-            origins.add(frontEndUrl.trim());
+            origins.add(normalizeOrigin(frontEndUrl));
         }
 
         CorsConfiguration config = new CorsConfiguration();
