@@ -16,7 +16,7 @@ import ErrorPage from "./components/ErrorPage";
 // </PrivateRoute>
 
 const AppRouter = () => {
-  const hideHeaderFooter = location.pathname.startsWith("/s");
+  const hideHeaderFooter = location.pathname.startsWith("/s") || /^\/[A-Za-z0-9_-]+$/.test(location.pathname);
 
     return (
         <>
@@ -26,6 +26,7 @@ const AppRouter = () => {
           <Route path="/" element={<LandingPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/s/:url" element={<ShortenUrlPage />} />
+          <Route path="/:url" element={<ShortenUrlPage />} />
 
           <Route path="/register" element={<PrivateRoute publicPage={true}><RegisterPage /></PrivateRoute>} />
           <Route path="/login" element={<PrivateRoute publicPage={true}><LoginPage /></PrivateRoute>} />
