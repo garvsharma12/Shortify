@@ -35,7 +35,7 @@ const CreateNewShorten = ({ setOpen, refetch }) => {
             },
           });
 
-          const frontRaw = import.meta.env.VITE_REACT_FRONT_END_URL || "";
+          const frontRaw = import.meta.env.VITE_REACT_FRONT_END_URL || "https://shortify-psi-rose.vercel.app";
           const frontBase = frontRaw.replace(/\/+$/, "");
           const shortenUrl = `${frontBase}/s/${res.shortUrl}`;
           navigator.clipboard.writeText(shortenUrl).then(() => {
