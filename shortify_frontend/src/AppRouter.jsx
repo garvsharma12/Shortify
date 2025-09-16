@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/NavBar";
 import ShortenUrlPage from "./components/ShortenUrlPage";
 import { Toaster } from "react-hot-toast";
@@ -16,7 +16,14 @@ import ErrorPage from "./components/ErrorPage";
 // </PrivateRoute>
 
 const AppRouter = () => {
-  const hideHeaderFooter = location.pathname.startsWith("/s") || /^\/[A-Za-z0-9_-]+$/.test(location.pathname);
+  const location = useLocation();
+  const path = location.pathname.replace(/^\/+|\/+$/g, ""); // trim leading/trailing slashes
+  const reserved = new Set(["", "about", "login", "register", "dashboard", "error"]);
+  // A short link is either /s/:slug or a single-segment root slug not in reserved list
+  const isShortRoute = path.startsWith("s/");
+  const isSingleSegment = !path.includes("/");
+  const isRootSlug = path.length > 0 && isSingleSegment && /^[A-Za-z0-9_-]+$/.test(path) && !reserved.has(path);
+  const hideHeaderFooter = isShortRoute || isRootSlug;
 
     return (
         <>
