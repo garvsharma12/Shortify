@@ -101,8 +101,8 @@ const ShortenItem = ({ originalUrl, shortUrl, clickCount, createdDate }) => {
               <span>
                 <FaRegCalendarAlt />
               </span>
-              <span className="text-[17px]">
-                {dayjs(createdDate).format("MMM DD, YYYY")}
+              <span className="text-[17px]" title={dayjs(createdDate).format("YYYY-MM-DD HH:mm:ss Z")}> 
+                {dayjs(createdDate).format("MMM DD, YYYY, hh:mm A")}
               </span>
             </div>
             </div>
