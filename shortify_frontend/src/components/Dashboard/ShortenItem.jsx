@@ -20,7 +20,7 @@ const ShortenItem = ({ originalUrl, shortUrl, clickCount, createdDate }) => {
     const [selectedUrl, setSelectedUrl] = useState("");
     const [analyticsData, setAnalyticsData] = useState([]);
 
-    const frontRaw = import.meta.env.VITE_REACT_FRONT_END_URL || "";
+    const frontRaw = import.meta.env.VITE_REACT_FRONT_END_URL || "https://shortify-psi-rose.vercel.app";
     const frontBase = frontRaw.replace(/\/+$/, "");
     const subDomain = frontBase.replace(/^https?:\/\//, "");
 

@@ -17,25 +17,38 @@ import java.util.List;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    // New: allow comma-separated origins via FRONTEND_ALLOWED_ORIGINS
     @Value("${frontend.allowed-origins:}")
     private String allowedOriginsProp;
 
-    // Backward-compat: single origin via FRONTEND_URL
     @Value("${frontend.url:}")
     private String frontEndUrl;
 
-    @Override
-    public void addCorsMappings(@NonNull CorsRegistry registry) {
+    private static String normalizeOrigin(String origin) {
+        if (origin == null) return null;
+        String trimmed = origin.trim();
+        while (trimmed.endsWith("/")) {
+            trimmed = trimmed.substring(0, trimmed.length() - 1);
+        }
+        return trimmed;
+    }
+
+    private List<String> loadOrigins() {
         List<String> origins = new ArrayList<>();
         if (allowedOriginsProp != null && !allowedOriginsProp.isBlank()) {
             origins.addAll(Arrays.stream(allowedOriginsProp.split(","))
                     .map(String::trim)
-                    .filter(s -> !s.isEmpty())
+                    .map(WebConfig::normalizeOrigin)
+                    .filter(s -> s != null && !s.isEmpty())
                     .toList());
         } else if (frontEndUrl != null && !frontEndUrl.isBlank()) {
-            origins.add(frontEndUrl.trim());
+            origins.add(normalizeOrigin(frontEndUrl));
         }
+        return origins;
+    }
+
+    @Override
+    public void addCorsMappings(@NonNull CorsRegistry registry) {
+        List<String> origins = loadOrigins();
 
         var reg = registry.addMapping("/**")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
@@ -43,27 +56,18 @@ public class WebConfig implements WebMvcConfigurer {
                 .exposedHeaders("Authorization", "Content-Type");
 
         if (origins.isEmpty() || origins.contains("*")) {
-            // Fallback: allow any origin pattern without credentials
             reg.allowedOriginPatterns("*")
                .allowCredentials(false);
         } else {
-            reg.allowedOrigins(origins.toArray(String[]::new))
+            // Use patterns so wildcard entries like https://*.vercel.app work
+            reg.allowedOriginPatterns(origins.toArray(String[]::new))
                .allowCredentials(true);
         }
     }
 
-    // Provide a CorsConfigurationSource so Spring Security's CORS uses the same rules
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        List<String> origins = new ArrayList<>();
-        if (allowedOriginsProp != null && !allowedOriginsProp.isBlank()) {
-            origins.addAll(Arrays.stream(allowedOriginsProp.split(","))
-                    .map(String::trim)
-                    .filter(s -> !s.isEmpty())
-                    .toList());
-        } else if (frontEndUrl != null && !frontEndUrl.isBlank()) {
-            origins.add(frontEndUrl.trim());
-        }
+        List<String> origins = loadOrigins();
 
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
@@ -74,7 +78,7 @@ public class WebConfig implements WebMvcConfigurer {
             config.setAllowedOriginPatterns(List.of("*"));
             config.setAllowCredentials(false);
         } else {
-            config.setAllowedOrigins(origins);
+            config.setAllowedOriginPatterns(origins);
             config.setAllowCredentials(true);
         }
 
