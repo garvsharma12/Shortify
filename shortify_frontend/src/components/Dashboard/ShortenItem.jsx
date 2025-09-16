@@ -20,10 +20,9 @@ const ShortenItem = ({ originalUrl, shortUrl, clickCount, createdDate }) => {
     const [selectedUrl, setSelectedUrl] = useState("");
     const [analyticsData, setAnalyticsData] = useState([]);
 
-    const subDomain = import.meta.env.VITE_REACT_FRONT_END_URL.replace(
-        /^https?:\/\//,
-        ""
-      );
+    const frontRaw = import.meta.env.VITE_REACT_FRONT_END_URL || "";
+    const frontBase = frontRaw.replace(/\/+$/, "");
+    const subDomain = frontBase.replace(/^https?:\/\//, "");
 
     const analyticsHandler = (shortUrl) => {
         if (!analyticToggle) {
@@ -75,8 +74,8 @@ const ShortenItem = ({ originalUrl, shortUrl, clickCount, createdDate }) => {
             <Link
               target='_'
               className='text-[17px]  font-montserrat font-[600] text-linkColor'
-              to={import.meta.env.VITE_REACT_FRONT_END_URL + "/s/" + `${shortUrl}`}>
-                  {subDomain + "/s/" + `${shortUrl}`}
+              to={`${frontBase}/s/${shortUrl}`}>
+                  {`${subDomain}/s/${shortUrl}`}
             </Link>
             <FaExternalLinkAlt className="text-linkColor" />
             </div>
@@ -110,9 +109,9 @@ const ShortenItem = ({ originalUrl, shortUrl, clickCount, createdDate }) => {
         </div>
 
         <div className="flex  flex-1  sm:justify-end items-center gap-4">
-            <CopyToClipboard
+      <CopyToClipboard
                 onCopy={() => setIsCopied(true)}
-                text={`${import.meta.env.VITE_REACT_FRONT_END_URL + "/s/" + `${shortUrl}`}`}
+        text={`${frontBase}/s/${shortUrl}`}
             >
                 <div className="flex cursor-pointer gap-1 items-center bg-btnColor py-2  font-semibold shadow-md shadow-slate-500 px-6 rounded-md text-white ">
                 <button className="">{isCopied ? "Copied" : "Copy"}</button>

@@ -6,7 +6,9 @@ const ShortenUrlPage = () => {
 
     useEffect(() => {
         if (url) {
-            window.location.href = import.meta.env.VITE_BACKEND_URL + `/${url}`;
+            const raw = import.meta.env.VITE_BACKEND_URL || "";
+            const base = raw.replace(/\/+$/, "");
+            window.location.href = `${base}/${url}`;
         }
     }, [url]);
   return <p>Redirecting...</p>;

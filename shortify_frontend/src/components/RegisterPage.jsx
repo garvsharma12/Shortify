@@ -36,7 +36,21 @@ const RegisterPage = () => {
             toast.success("Registration Successful!");
         } catch (error) {
             console.log(error);
-            toast.error("Registration Failed!");
+            const res = error?.response;
+            if (!res) {
+                // Likely a network/CORS error
+                toast.error("Registration failed: network/CORS error. Check backend URL and CORS settings.");
+                return;
+            }
+            const msg = res.data;
+            if (typeof msg === "string") {
+                toast.error(msg);
+            } else if (msg && typeof msg === "object") {
+                const first = Object.values(msg)[0];
+                toast.error(String(first || "Registration Failed!"));
+            } else {
+                toast.error("Registration Failed!");
+            }
         } finally {
             setLoader(false);
         }

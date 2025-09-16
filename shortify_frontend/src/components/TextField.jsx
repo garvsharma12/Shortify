@@ -34,11 +34,13 @@ const TextField = ({
             minLength: min
               ? { value: min, message: "Minimum 6 character is required" }
               : null,
+            setValueAs: (v) => (typeof v === "string" ? v.trim() : v),
   
             pattern:
               type === "email"
                 ? {
-                    value: /^[a-zA-Z0-9]+@(?:[a-zA-Z0-9]+\.)+com+$/,
+                    // RFC 5322-like simplified email regex (allows many TLDs)
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
                     message: "Invalid email",
                   }
                 : type === "url"
