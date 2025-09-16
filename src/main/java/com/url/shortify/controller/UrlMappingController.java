@@ -7,6 +7,8 @@ import com.url.shortify.service.UrlMappingService;
 import com.url.shortify.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +20,13 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
+@CrossOrigin(
+    origins = {"https://shortify-psi-rose.vercel.app", "http://localhost:5173"},
+    allowedHeaders = {"*"},
+    exposedHeaders = {"Authorization", "Content-Type"},
+    allowCredentials = "true",
+    methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS }
+)
 @RequestMapping("/api/urls")
 @AllArgsConstructor
 public class UrlMappingController {
