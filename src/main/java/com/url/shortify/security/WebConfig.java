@@ -50,18 +50,20 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(@NonNull CorsRegistry registry) {
         List<String> origins = loadOrigins();
 
-        var reg = registry.addMapping("/**")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .exposedHeaders("Authorization", "Content-Type");
+        var mapping = registry.addMapping("/**")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD")
+                .allowedHeaders("Authorization", "Content-Type", "X-Requested-With")
+                .exposedHeaders("Authorization", "Content-Type")
+                .maxAge(3600);
 
-        if (origins.isEmpty() || origins.contains("*")) {
-            reg.allowedOriginPatterns("*")
-               .allowCredentials(false);
+        boolean hasWildcard = origins.stream().anyMatch(o -> o.contains("*"));
+        if (origins.isEmpty() || hasWildcard) {
+            mapping.allowedOriginPatterns("*")
+                    .allowCredentials(false);
         } else {
-            // Use patterns so wildcard entries like https://*.vercel.app work
-            reg.allowedOriginPatterns(origins.toArray(String[]::new))
-               .allowCredentials(true);
+            // Exact origins: echo back and allow credentials
+            mapping.allowedOrigins(origins.toArray(String[]::new))
+                    .allowCredentials(true);
         }
     }
 
@@ -70,15 +72,18 @@ public class WebConfig implements WebMvcConfigurer {
         List<String> origins = loadOrigins();
 
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
         config.setExposedHeaders(List.of("Authorization", "Content-Type"));
+        config.setMaxAge(3600L);
 
-        if (origins.isEmpty() || origins.contains("*")) {
+        boolean hasWildcard = origins.stream().anyMatch(o -> o.contains("*"));
+        if (origins.isEmpty() || hasWildcard) {
             config.setAllowedOriginPatterns(List.of("*"));
             config.setAllowCredentials(false);
         } else {
-            config.setAllowedOriginPatterns(origins);
+            // Exact match when no wildcard used
+            config.setAllowedOrigins(origins);
             config.setAllowCredentials(true);
         }
 

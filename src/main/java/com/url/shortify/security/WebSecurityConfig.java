@@ -57,11 +57,13 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             DaoAuthenticationProvider daoAuthenticationProvider,
-            JwtAuthenticationFilter jwtAuthenticationFilter
+        JwtAuthenticationFilter jwtAuthenticationFilter
     ) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> {})
+    // Enable CORS using the CorsConfigurationSource bean defined in WebConfig
+    http.csrf(AbstractHttpConfigurer::disable)
+        .cors(cors -> { /* use bean */ })
                 .authorizeHttpRequests(auth -> auth
+            // Always permit preflight requests
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/public/login").permitAll()
                         .requestMatchers("/api/auth/public/register").permitAll()
