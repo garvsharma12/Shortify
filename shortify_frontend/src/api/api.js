@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const envBase = import.meta.env.VITE_BACKEND_URL;
-const fallbackBase = "https://shortify-production-4b6f.up.railway.app";
+const fallbackBase = "https://shortify-vuv0.onrender.com";
 const rawBase = (envBase && envBase.trim()) ? envBase : fallbackBase;
 // Trim trailing slashes to avoid double slash when callers use leading '/path'
 const baseURL = rawBase.replace(/\/+$/, "");
