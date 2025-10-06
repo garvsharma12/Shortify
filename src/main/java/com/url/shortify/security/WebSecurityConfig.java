@@ -57,24 +57,30 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(
             HttpSecurity http,
             DaoAuthenticationProvider daoAuthenticationProvider,
-        JwtAuthenticationFilter jwtAuthenticationFilter
+            JwtAuthenticationFilter jwtAuthenticationFilter
     ) throws Exception {
-    // Enable CORS using the CorsConfigurationSource bean defined in WebConfig
-    http.csrf(AbstractHttpConfigurer::disable)
-        .cors(cors -> { /* use bean */ })
-                .authorizeHttpRequests(auth -> auth
-            // Always permit preflight requests
-            .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/auth/public/login").permitAll()
-                        .requestMatchers("/api/auth/public/register").permitAll()
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/user/**").permitAll()
-                        // allow short redirect links like /abc123 without auth
-                        .requestMatchers(HttpMethod.GET, "/*").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .authenticationProvider(daoAuthenticationProvider)
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        // Enable CORS using the CorsConfigurationSource bean defined in WebConfig
+        http.csrf(AbstractHttpConfigurer::disable)
+            .cors(cors -> { /* use bean */ })
+            .authorizeHttpRequests(auth -> auth
+                // Always permit preflight requests
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // Permit HEAD requests (health checks, probes)
+                .requestMatchers(HttpMethod.HEAD, "/**").permitAll()
+                // Public root and error endpoints
+                .requestMatchers(HttpMethod.GET, "/").permitAll()
+                .requestMatchers(HttpMethod.GET, "/error").permitAll()
+                // Public auth endpoints
+                .requestMatchers("/api/auth/public/login").permitAll()
+                .requestMatchers("/api/auth/public/register").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/user/**").permitAll()
+                // allow short redirect links like /abc123 without auth (single segment)
+                .requestMatchers(HttpMethod.GET, "/*").permitAll()
+                .anyRequest().authenticated()
+            )
+            .authenticationProvider(daoAuthenticationProvider)
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
